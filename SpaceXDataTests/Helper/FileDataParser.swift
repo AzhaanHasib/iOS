@@ -11,6 +11,8 @@ import Foundation
 class FileDataParser {
     
     static let shared = FileDataParser()
+    
+    private init(){}
 }
 
 
@@ -21,13 +23,11 @@ extension FileDataParser {
         guard let file = bundle?.url(forResource: filename, withExtension: "json") else {
             return nil
         }
-
         do {
             data = try Data(contentsOf: file)
         } catch {
             return nil
         }
-
         do {
             let decoder = JSONDecoder()
             return try decoder.decode(T.self, from: data)

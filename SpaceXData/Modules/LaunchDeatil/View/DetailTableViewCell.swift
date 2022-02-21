@@ -10,9 +10,20 @@ import UIKit
 class DetailTableViewCell: UITableViewCell {
 
    // MARK: - Properties - UI
-   let  descriptionTextView =  UITextView()
-   static  let cellId = "detailCell"
-
+    static  let cellId = "detailCell"
+    var descriptionTextView : UITextView = {
+          let textView = UITextView()
+          textView.isScrollEnabled = false
+          textView.isEditable = false
+          textView.dataDetectorTypes = .link
+          textView.font = .systemFont(ofSize: 16)
+          textView.backgroundColor = .clear
+          textView.textColor = .black
+          textView.layer.borderColor = UIColor.lightGray.cgColor
+           textView.layer.borderWidth = 1.0
+          return textView
+    }()
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -21,30 +32,22 @@ class DetailTableViewCell: UITableViewCell {
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
         self.backgroundColor = .clear
-        descriptionTextView.isScrollEnabled = false
-        descriptionTextView.isEditable = false
-        descriptionTextView.dataDetectorTypes = .link
-        contentView.addSubview(descriptionTextView)
-        descriptionTextView.font = .systemFont(ofSize: 16)
-        descriptionTextView.backgroundColor = .clear
-        descriptionTextView.textColor = .black
-        descriptionTextView.layer.borderColor = UIColor.lightGray.cgColor
-        descriptionTextView.layer.borderWidth = 1.0
-
-        descriptionTextView.translatesAutoresizingMaskIntoConstraints = false
-        descriptionTextView.addConstraintsToFitToSuperview()
-
         // Configure the view for the selected state
     }
 
-
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-
+        contentView.addSubview(descriptionTextView)
+        descriptionTextView.translatesAutoresizingMaskIntoConstraints = false
+        descriptionTextView.addConstraintsToFitToSuperview()
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func configureData(detail: String?) {
+        descriptionTextView.text = detail
     }
 
 }

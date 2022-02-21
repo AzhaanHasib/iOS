@@ -7,32 +7,29 @@
 
 import Foundation
 
-import UIKit
-
-
 extension String {
     
-    func yearStringFromDate() -> String {
+    func yearStringFromDate() -> String? {
         
-        let formatter = Foundation.DateFormatter()
+        let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.sssZ"
         let date  = formatter.date(from: self)
         formatter.timeZone = TimeZone(abbreviation: "UTC")
         formatter.dateFormat = "yyyy-MM-dd"
-        return formatter.string(from: date ?? Date())
+        guard let date = date else { return nil }
+        return formatter.string(from: date)
     }
     
-    func yearFromDate() -> Date {
+    func yearFromDate() -> Date? {
         
-        let formatter = Foundation.DateFormatter()
+        let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.sssZ"
         let date  = formatter.date(from: self)
         formatter.timeZone = TimeZone(abbreviation: "UTC")
         formatter.dateFormat = "yyyy-MM-dd"
-        return date ?? Date()
+        return date
         
     }
-    
     
 }
 

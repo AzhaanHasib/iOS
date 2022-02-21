@@ -8,8 +8,15 @@
 import XCTest
 
 class LaunchListViewModelTest: XCTestCase {
+    
+    private var launchCellViewModels : [LaunchCellViewModel]?
 
     override func setUpWithError() throws {
+        
+        guard let launchList: [Launch]? = FileDataParser.shared.load("LaunchListResponse", bundle: Bundle(for: type(of: self))) else {return}
+        
+         launchCellViewModels = launchList!.map {LaunchCellViewModel($0) }
+        
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
 
@@ -27,9 +34,24 @@ class LaunchListViewModelTest: XCTestCase {
 
     func testPerformanceExample() throws {
         // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
+
+    }
+    
+    func testLaunchCellModelsNotNil() {
+        
+        XCTAssertNotNil(launchCellViewModels)
+    }
+    
+    func testLaunchCellModelsCount() {
+        let count = launchCellViewModels?.count ?? 0
+        XCTAssertEqual(count, 111)
+        
+    }
+    
+    func testLaunchCellModelsCountNotZero() {
+        let count = launchCellViewModels?.count ?? 0
+        XCTAssertNotEqual(0, count)
+        
     }
 
 }

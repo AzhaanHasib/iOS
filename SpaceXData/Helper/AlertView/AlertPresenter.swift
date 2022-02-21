@@ -10,14 +10,14 @@
 import Foundation
 import UIKit
 
-enum CustomMessage: String {
+enum CustomMessage {
     
-    case filterAddMsg = "Do you want to add filter on launch success?"
-    case filterRemoveMsg = "Do you want to remove filter on launch success?"
-    case yes       = "yes"
-    case no        = "no"
-    case appName   = "SpaceX"
-    case ok        = "ok"
+    static let filterAddMsg = "Do you want to add filter on launch success?"
+    static let filterRemoveMsg = "Do you want to remove filter on launch success?"
+    static let yes       = "yes"
+    static let no        = "no"
+    static let appName   = "SpaceX"
+    static let ok        = "ok"
 }
 
 protocol AlertPresentable {

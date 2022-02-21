@@ -37,7 +37,7 @@ class RocketModelTest: XCTestCase {
     
     func testRocketResponseNotNil(){
         
-        XCTAssertNil(rocket)
+        XCTAssertNotNil(rocket)
     }
     
     func testRocketName() {

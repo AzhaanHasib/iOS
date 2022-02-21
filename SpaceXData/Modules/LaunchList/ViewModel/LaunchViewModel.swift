@@ -7,16 +7,27 @@
 
 import Foundation
 
+protocol LaunchViewModelType {
+    
+    typealias launchUpdateHandler = (Result<[LaunchCellViewModel], Error>) -> Void
+    func fetchLaunches(completion: @escaping launchUpdateHandler)
+    func cellViewModels(launchList: [Launch]) -> [LaunchCellViewModel]
+    func getRequestParams() -> [String : Any]
+    func filterAndSortLaunches(_ sortType: SortType )
+    func sortOnName()
+    func sortOnDate()
+    func getCellViewModels() ->  [LaunchCellViewModel]?
+}
 
-class LaunchViewModel : NSObject {
+
+class LaunchViewModel: LaunchViewModelType {
     private var apiManager: LaunchesAPIManager?
-    typealias launchUpdateHandler = (Result<[LaunchesCellViewModel], Error>) -> Void
-    var launcheCellViewModel : [LaunchesCellViewModel]?
+    var launchCellViewModels : [LaunchCellViewModel]?
+    
     
     // MARK: - Initialisation
     init(apiManager: LaunchesAPIManager) {
         self.apiManager = apiManager
-        super.init()
     }
     
     func fetchLaunches(completion: @escaping launchUpdateHandler)  {
@@ -24,43 +35,44 @@ class LaunchViewModel : NSObject {
         
         self.apiManager?.fetchLaunches(params: params, [Launch].self, completion: {[weak self] result  in
             DispatchQueue.main.async {
+            guard let self = self else { return }
             switch result {
                 case .failure(let error):
                     completion(.failure(error))
                 case .success(let launches):
-                if self?.launcheCellViewModel != nil {
-                    self?.launcheCellViewModel?.append(contentsOf: self?.cellViewModel(launchList: launches) ?? [])
+                if self.launchCellViewModels != nil {
+                    self.launchCellViewModels?.append(contentsOf: self.cellViewModels(launchList: launches) )
                 }
                 else {
-                    self?.launcheCellViewModel = self?.cellViewModel(launchList: launches)
+                    self.launchCellViewModels = self.cellViewModels(launchList: launches)
                 }
-                completion(.success((self?.cellViewModel(launchList: launches))!))
+                completion(.success((self.cellViewModels(launchList: launches))))
             }
           }
        })
      }
-    
 }
 
-private extension LaunchViewModel {
+extension LaunchViewModel {
     
     func getRequestParams() -> [String : Any] {
-        return [ "limit"
-                 : 10, "offset" : launcheCellViewModel?.count ?? 0
+        return [ "limit": 10,
+                 "offset" : launchCellViewModels?.count ?? 0
         ]
     }
-    func cellViewModel(launchList: [Launch]) -> [LaunchesCellViewModel] {
-        var launchCellVMs : [LaunchesCellViewModel] = []
-        launchCellVMs = launchList.map {LaunchesCellViewModel($0) }
-        return launchCellVMs
+    func cellViewModels(launchList: [Launch]) -> [LaunchCellViewModel] {
+        launchList.map {LaunchCellViewModel($0) }
+    }
+    
+    func getCellViewModels() -> [LaunchCellViewModel]? {
+        return launchCellViewModels
     }
         
 }
 
  extension LaunchViewModel {
     
-     func filterAndSortLaunches(_ sortType: SortType = .none, _ isFilterOn: Bool = false) {
-         
+     func filterAndSortLaunches(_ sortType: SortType = .none) {
          switch sortType {
          case .byDate:
                sortOnDate()
@@ -68,40 +80,18 @@ private extension LaunchViewModel {
                sortOnName()
          case .none:break
          }
-         if isFilterOn {
-             filterBySuccess()
-         }
      }
      
      func sortOnName() {
-         let list = launcheCellViewModel?.sorted(by: { obj1, obj2 in
-             let fName = obj1.name
-             let sName = obj2.name
-             return (fName.localizedCaseInsensitiveCompare(sName) == .orderedAscending)
-
+         launchCellViewModels = launchCellViewModels?.sorted(by: { lhs, rhs in
+             (lhs.name.localizedCaseInsensitiveCompare(rhs.name) == .orderedAscending)
          })
-        launcheCellViewModel = list
      }
      
      func sortOnDate() {
-         let list = launcheCellViewModel?.sorted(by: { obj1, obj2 in
-             let fDate = obj1.launchDate
-             let sDate = obj2.launchDate
-             return (fDate > sDate)
-
+         launchCellViewModels = launchCellViewModels?.sorted(by: { lhs, rhs in
+              ((lhs.launchDate ?? Date()) > (rhs.launchDate ?? Date()))
          })
-         launcheCellViewModel = list
-         
-     }
-     
-     func filterBySuccess(_ isFilterOn: Bool = false) {
-         if isFilterOn {
-             let list = launcheCellViewModel?.filter({ obj in
-                 return obj.launchSuccess == true
-             })
-             launcheCellViewModel = list
-         }
-         
      }
     
 }

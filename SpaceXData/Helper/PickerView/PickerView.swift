@@ -8,14 +8,14 @@
 import Foundation
 import UIKit
 
-enum DefaulFrameSize: CGFloat {
+enum DefaulFrameSize {
     
-    case pickerViewHeight = 300
-    case toolBarHeight =  50
+    static let pickerViewHeight = CGFloat(300)
+    static let toolBarHeight    =  CGFloat(50)
 }
 
 
-protocol ToolbarPickerViewDelegate: class {
+protocol ToolbarPickerViewDelegate: AnyObject {
     func didTapDone()
     func didTapCancel()
 }
@@ -26,8 +26,7 @@ extension ToolbarPickerViewDelegate {
 
 class CustomPickerView: UIPickerView {
 
-    public private(set) var toolbar: UIToolbar?
-    public weak var toolbarDelegate: ToolbarPickerViewDelegate?
+    weak var toolbarDelegate: ToolbarPickerViewDelegate?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -58,29 +57,4 @@ class CustomPickerView: UIPickerView {
 }
 
 
-class CustomToolbar: UIToolbar {
-    
-    public weak var toolbarDelegate: ToolbarPickerViewDelegate?
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        self.commonInit()
-    }
 
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        self.commonInit()
-    }
-
-    private func commonInit() {
-    
-        self.barStyle = .default
-        self.items = [UIBarButtonItem.init(title: "Done", style: .done, target: self, action: #selector(onDoneButtonTapped))]
-        
-    }
-    
-    @objc func onDoneButtonTapped() {
-        self.toolbarDelegate?.didTapDone()
-    }
-    
-}

@@ -10,9 +10,7 @@ import UIKit
 class LaunchesDetailViewController: UIViewController {
     
     // MARK: - Properties -
-    private let launchViewModel = LaunchDetailViewModel(apiManager: LaunchesAPIManager())
-    private let rocketViewModel = RocketDetailViewModel(apiManager: LaunchesAPIManager())
-
+    private let launchViewModelType: LaunchDetailViewModelType = LaunchDetailViewModel.init(apiManager: LaunchesAPIManager())
     var flightNumber: String?
     var rocketId: String?
     
@@ -38,10 +36,14 @@ class LaunchesDetailViewController: UIViewController {
         super.viewDidLoad()
         setUPUI()
         fetchLaunchDetail()
+        fetchRocketDetail()
         // Do any additional setup after loading the view.
     }
     
-
+    func configureWith(_ flightNumber: String?, rocketId: String?) {
+        self.flightNumber = flightNumber
+        self.rocketId = rocketId
+    }
 }
 
 private extension LaunchesDetailViewController {
@@ -49,15 +51,16 @@ private extension LaunchesDetailViewController {
     func fetchLaunchDetail() {
         guard let flightNumber = flightNumber else { return  }
         indicatorView.startAnimating()
-        launchViewModel.fetchLaunchesDetail(flightNumber){[weak self] result in
+        launchViewModelType.fetchLaunchesDetail(flightNumber){[weak self] result in
+            guard let self = self else { return }
             DispatchQueue.main.async {
-                self?.indicatorView.stopAnimating()
-                self?.detailTableView.reloadData()
-                self?.fetchRocketDetail()
+                self.indicatorView.stopAnimating()
                 switch result {
-                    case .success( _):break
+                    case .success( _):
+                    self.detailTableView.reloadData()
                     case .failure(let error):
-                    self?.showAlert(title: CustomMessage.appName.rawValue, message: error.localizedDescription, actionTexts: [CustomMessage.ok.rawValue], completion: nil)
+                    self.showAlert(title: CustomMessage.appName, message: error.localizedDescription, actionTexts:
+                         [CustomMessage.ok], completion: nil)
                 }
             }
         }
@@ -69,14 +72,17 @@ private extension LaunchesDetailViewController {
     func fetchRocketDetail() {
         guard let rocketId = rocketId else { return  }
         indicatorView.startAnimating()
-        rocketViewModel.fetchRocketsDetail(rocketId){[weak self] result in
+        launchViewModelType.fetchRocketsDetail(rocketId){[weak self] result in
+            guard let self = self else { return }
             DispatchQueue.main.async {
-                self?.indicatorView.stopAnimating()
-                self?.detailTableView.reloadData()
+                self.indicatorView.stopAnimating()
                 switch result {
-                    case .success( _):break
+                case .success( _):
+                    self.detailTableView.reloadData()
                     case .failure(let error):
-                    self?.showAlert(title: CustomMessage.appName.rawValue, message: error.localizedDescription, actionTexts: [CustomMessage.ok.rawValue], completion: nil)
+                    self.showAlert(title: CustomMessage.appName,
+                    message: error.localizedDescription,
+                    actionTexts: [CustomMessage.ok], completion: nil)
                 }
             }
         }
@@ -89,25 +95,23 @@ private extension LaunchesDetailViewController {
         view.addSubview(detailTableView)
         view.addSubview(indicatorView)
         detailTableView.addConstraintsToFitToSuperview()
-        indicatorView.addConstaintsToCenterVertically()
-        indicatorView.addConstaintsToCenterHorizontally()
-
+        indicatorView.addConstraintsToFitToSuperview()
     }
 }
 
 
 extension LaunchesDetailViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return (launchViewModel.launchCellViewModel == nil && rocketViewModel.rocketViewModelCell == nil ) ? 0 : (rocketViewModel.rocketViewModelCell == nil ? 1 : 2)
+        return launchViewModelType.getNumberOfRows()
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: DetailTableViewCell.cellId, for: indexPath) as? DetailTableViewCell else {return UITableViewCell()}
         cell.selectionStyle  = .none
-        cell.descriptionTextView.text =  (indexPath.row == 0) ? (launchViewModel.launchCellViewModel?.completeDetail) : (rocketViewModel.rocketViewModelCell?.completeDetail)
+        let detail = (indexPath.row == 0) ? (launchViewModelType.getCellLaunchViewModel()?.completeLaunchDetail) : (launchViewModelType.getCellRocketViewModel()?.completeDetail)
+        cell.configureData(detail: detail)
         return cell
     }
-    
 }
 
 extension LaunchesDetailViewController: UITableViewDelegate {

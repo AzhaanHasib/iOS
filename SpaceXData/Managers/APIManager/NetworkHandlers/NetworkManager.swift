@@ -8,7 +8,7 @@ import Foundation
 
 typealias APIRouterCompletion = (_ data: Data?,_ response: URLResponse?,_ error: Error?)->()
 
-protocol APIRouter: class {
+protocol APIRouter: AnyObject {
     associatedtype APIRoute: RequestBuilder
     
     func performRequest(route: APIRoute, completion: @escaping APIRouterCompletion)

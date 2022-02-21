@@ -8,8 +8,14 @@
 import XCTest
 
 class LaunchViewModelTest: XCTestCase {
+    
+    private var launchCellViewModel : LaunchCellViewModel?
 
     override func setUpWithError() throws {
+        
+        guard let launch: Launch? = FileDataParser.shared.load("LaunchResponse", bundle: Bundle(for: type(of: self))) else {return}
+        launchCellViewModel = LaunchCellViewModel(launch!)
+        
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
 
@@ -30,6 +36,25 @@ class LaunchViewModelTest: XCTestCase {
         self.measure {
             // Put the code you want to measure the time of here.
         }
+    }
+    
+    func testLaunchCellModelNotNil() {
+        XCTAssertNotNil(launchCellViewModel)
+    }
+    
+    func testLaunchCellModelNumber() {
+        let flightNumber = launchCellViewModel?.flightNumber
+        XCTAssertEqual(flightNumber, "1")
+    }
+    
+    func testLaunchCellModelLaunchdate() {
+        let launchDateString = launchCellViewModel?.launchDateString
+        XCTAssertEqual(launchDateString, "2006-03-24")
+    }
+    
+    func testLaunchCellModelLaunchSucesss() {
+        let launchSuccess = launchCellViewModel?.launchSuccess
+        XCTAssertEqual(launchSuccess, false)
     }
 
 }

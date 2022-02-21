@@ -11,6 +11,11 @@ import UIKit
 
 extension UIView {
     
+    func addConstaintsToFitCentre() {
+        addConstaintsToCenterVertically()
+        addConstaintsToCenterHorizontally()
+    }
+    
     func addConstaintsToCenterVertically() {
         prepareForConstraints()
         self.superview!.addConstraint(NSLayoutConstraint(item: self,
@@ -38,8 +43,6 @@ extension UIView {
         self.topAnchor.constraint(equalTo: superView.topAnchor).isActive = true
         self.bottomAnchor.constraint(equalTo: superView.bottomAnchor).isActive = true
     }
-    
-
     
     private func prepareForConstraints() {
            self.translatesAutoresizingMaskIntoConstraints = false
