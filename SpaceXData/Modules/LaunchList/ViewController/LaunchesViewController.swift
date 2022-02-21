@@ -90,16 +90,12 @@ class LaunchesViewController: UIViewController {
                 switch result {
                     case .success(let models):
                     self.isAllDataLoaded = models.count == 0
-                    self.updateView()
+                    self.updateViewModel()
                     case .failure(let error):
                     self.showAlert(title: CustomMessage.appName, message: error.localizedDescription, actionTexts: [CustomMessage.ok], completion: nil)
                 }
             }
         }
-    }
-    
-    func updateView() {
-        self.launchTableView.reloadData()
     }
     
     func updateViewModel() {

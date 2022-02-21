@@ -84,7 +84,7 @@ extension LaunchViewModel {
      
      func sortOnName() {
          launchCellViewModels = launchCellViewModels?.sorted(by: { lhs, rhs in
-             (lhs.name.localizedCaseInsensitiveCompare(rhs.name) == .orderedAscending)
+             ((lhs.launch.name ?? "").localizedCaseInsensitiveCompare(rhs.launch.name ?? "") == .orderedAscending)
          })
      }
      
