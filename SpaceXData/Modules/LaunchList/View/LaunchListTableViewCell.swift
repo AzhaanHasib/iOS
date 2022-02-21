@@ -7,7 +7,7 @@
 
 import UIKit
 
-class CustomTableCell: UITableViewCell {
+class LaunchListTableViewCell: UITableViewCell {
     
    static  let cellId = "Cell"
    let nameLabel = UILabel()
@@ -21,7 +21,6 @@ class CustomTableCell: UITableViewCell {
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
         // Configure the view for the selected state
     }
 
@@ -33,7 +32,6 @@ class CustomTableCell: UITableViewCell {
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         numberLabel.translatesAutoresizingMaskIntoConstraints = false
         timeLabel.translatesAutoresizingMaskIntoConstraints = false
-        
         contentView.addSubview(imgUser)
         contentView.addSubview(nameLabel)
         contentView.addSubview(numberLabel)
